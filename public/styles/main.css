@@ -1,147 +1,135 @@
 /* main.css */
 
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #0d0d0d;
-    color: #f0f0f0;
-  }
-  
-  .navbar {
-    background: rgba(20, 20, 20, 0.95);
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem 2rem;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.2);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-  }
-  
-  .logo .highlight {
-    color: red;
-  }
-  
-  .nav-links {
-    display: flex;
-    list-style: none;
-    gap: 1.5rem;
-  }
-  
-  .nav-links li a {
-    color: #f0f0f0;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  
-  .nav-links li a:hover {
-    color: red;
-  }
-  
-  main {
-    padding: 2rem;
-    max-width: 960px;
-    margin: auto;
-  }
-  
-  .upload-box {
-    background: #1a1a1a;
-    padding: 2rem;
-    border: 2px dashed red;
-    text-align: center;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-  }
-  
-  .upload-box img {
-    width: 60px;
-    margin-bottom: 1rem;
-  }
-  
-  .dropzone {
-    display: inline-block;
-    cursor: pointer;
-  }
-  
-  .loading {
-    font-size: 1rem;
-    color: red;
-    margin-top: 1rem;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  .toggle-controls {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .toggle-controls button,
-  .download-btn,
-  form button {
-    background-color: red;
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .toggle-controls button:hover,
-  .download-btn:hover,
-  form button:hover {
-    background-color: #ff3333;
-  }
-  
-  #insightsSection,
-  #heatmapSection {
-    background: #1f1f1f;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 0 8px rgba(255, 0, 0, 0.2);
-    margin-bottom: 2rem;
-  }
-  
-  #heatmapGraphic {
-    margin-top: 1rem;
-    font-size: 1.25rem;
-    line-height: 1.6;
-  }
-  
-  form {
-    display: flex;
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(135deg, #0f0f0f, #1f1f2f);
+  color: #f0f0f0;
+  scroll-behavior: smooth;
+}
+
+header {
+  background: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
+}
+
+header h1 {
+  font-size: 2rem;
+  color: #00ffff;
+}
+
+header h1 .dot {
+  color: red;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+nav ul li a {
+  color: #00ffff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+nav ul li a:hover {
+  color: #ff00ff;
+}
+
+main {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.panel {
+  margin-bottom: 4rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+}
+
+.panel:hover {
+  transform: scale(1.01);
+}
+
+input[type="file"] {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: #222;
+  color: white;
+  border: 1px solid #00ffff;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  background: #00ffff;
+  color: #000;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #00cccc;
+}
+
+#loading {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #ff0;
+}
+
+.hidden {
+  display: none;
+}
+
+#results h3 {
+  margin-top: 2rem;
+  color: #00ffff;
+}
+
+#heatmap, #insightsList {
+  margin-top: 1rem;
+  background: #111;
+  padding: 1rem;
+  border-radius: 8px;
+  color: white;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: #111;
+  color: #aaa;
+  font-size: 0.9rem;
+  border-top: 1px solid #222;
+}
+
+@media (max-width: 768px) {
+  header {
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
   }
-  
-  form input,
-  form textarea {
-    padding: 0.75rem;
-    border-radius: 6px;
-    border: none;
-    background: #2a2a2a;
-    color: #fff;
+
+  nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
   }
-  
-  footer {
-    text-align: center;
-    padding: 2rem;
-    background: #111;
-    color: #888;
-    margin-top: 3rem;
+
+  .panel {
+    padding: 1rem;
   }
-  
+}

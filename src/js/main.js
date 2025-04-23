@@ -1,76 +1,68 @@
 // main.js
 
-const audioInput = document.getElementById('audioInput');
-const loadingSpinner = document.getElementById('loadingSpinner');
-const insightsSection = document.getElementById('insightsSection');
-const heatmapSection = document.getElementById('heatmapSection');
-const insightsList = document.getElementById('insightsList');
-const heatmapGraphic = document.getElementById('heatmapGraphic');
+document.getElementById("processBtn").addEventListener("click", async () => {
+  const fileInput = document.getElementById("audioUpload");
+  const loading = document.getElementById("loading");
+  const results = document.getElementById("results");
+  const summaryText = document.getElementById("summaryText");
+  const heatmap = document.getElementById("heatmap");
+  const insightsList = document.getElementById("insightsList");
 
-const toggleInsights = document.getElementById('toggleInsights');
-const toggleHeatmap = document.getElementById('toggleHeatmap');
-const downloadPDFBtn = document.getElementById('downloadPDF');
+  if (!fileInput.files[0]) {
+    alert("Please upload an audio file first.");
+    return;
+  }
 
-const API_BASE = 'https://convonote.azurewebsites.net/api';
+  results.classList.add("hidden");
+  loading.classList.remove("hidden");
 
-let finalTranscript = '';
-let finalInsights = [];
-let finalConfidenceMap = [];
-
-function toggleSection(section) {
-  section.classList.toggle('hidden');
-}
-
-toggleInsights.addEventListener('click', () => toggleSection(insightsSection));
-toggleHeatmap.addEventListener('click', () => toggleSection(heatmapSection));
-
-audioInput.addEventListener('change', async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  loadingSpinner.classList.remove('hidden');
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
 
   try {
-    // Upload to Azure Blob
-    const blobUploadRes = await fetch(`${API_BASE}/uploadBlob`, {
-      method: 'POST',
-      headers: { 'Content-Type': file.type },
-      body: file
+    const speechRes = await fetch("https://convonote.azurewebsites.net/api/speechToText", {
+      method: "POST",
+      body: formData,
     });
-    const { blobUrl } = await blobUploadRes.json();
+    const { transcript } = await speechRes.json();
 
-    // Transcribe audio
-    const speechRes = await fetch(`${API_BASE}/speechToText`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ audioUrl: blobUrl })
+    const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryInsights", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript }),
     });
-    const { transcript, confidenceMap } = await speechRes.json();
-    finalTranscript = transcript;
-    finalConfidenceMap = confidenceMap;
+    const { summary, insights, heatmapData } = await summaryRes.json();
 
-    // Get AI Summary + Insights
-    const openaiRes = await fetch(`${API_BASE}/summaryInsights`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ transcript })
-    });
-    const { summary, insights } = await openaiRes.json();
-    finalInsights = insights;
-
-    // Render insights and heatmap
+    summaryText.textContent = summary;
+    heatmap.innerHTML = heatmapData.map((c, i) => `<div>${i + 1}. ${c}</div>`).join('');
     insightsList.innerHTML = insights.map(i => `<li>${i}</li>`).join('');
-    heatmapGraphic.innerHTML = confidenceMap.map(c => `${c.emoji} ${c.timestamp}: ${c.text}`).join('<br>');
 
-    downloadPDFBtn.disabled = false;
+    loading.classList.add("hidden");
+    results.classList.remove("hidden");
   } catch (err) {
-    console.error('Error:', err);
-    alert('An error occurred while processing the audio.');
-  } finally {
-    loadingSpinner.classList.add('hidden');
+    console.error("Error:", err);
+    alert("Something went wrong. Try again.");
+    loading.classList.add("hidden");
   }
 });
 
-downloadPDFBtn.addEventListener('click', () => {
-  generatePDF(finalTranscript, finalInsights, finalConfidenceMap);
+document.getElementById("toggleHeatmap").addEventListener("click", () => {
+  document.getElementById("heatmap").classList.toggle("hidden");
+});
+
+document.getElementById("toggleInsights").addEventListener("click", () => {
+  document.getElementById("insightsList").classList.toggle("hidden");
+});
+
+document.getElementById("downloadPdf").addEventListener("click", () => {
+  const summary = document.getElementById("summaryText").textContent;
+  const insights = Array.from(document.querySelectorAll("#insightsList li")).map(li => li.textContent);
+  const heatmap = document.getElementById("heatmap").innerText;
+
+  const pdfText = `ConvoNote\n\nSummary:\n${summary}\n\nInsights:\n${insights.join("\n")}\n\nHeatmap:\n${heatmap}`;
+  const blob = new Blob([pdfText], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "ConvoNote_Summary.pdf";
+  link.click();
 });
