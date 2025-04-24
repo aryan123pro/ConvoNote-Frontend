@@ -26,13 +26,13 @@ document.getElementById("processBtn").addEventListener("click", async () => {
   formData.append("file", fileInput.files[0]);
 
   try {
-    const speechRes = await fetch("https://convonote.azurewebsites.net/api/speechToText", {
+    const speechRes = await fetch("https://convonote.azurewebsites.net/api/speechtotext", {
       method: "POST",
       body: formData,
     });
     const { transcript } = await speechRes.json();
 
-    const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryInsights", {
+    const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryinsights", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),
