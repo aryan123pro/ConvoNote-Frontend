@@ -1,59 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ConvoNote</title>
-  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>ConvoNote<span class="dot">.</span></h1>
-    <nav>
-      <ul>
-        <li><a href="#upload">Upload</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
+  <div class="glass-wrapper">
+    <header>
+      <h1 class="logo">ConvoNote<span class="dot">.</span></h1>
+      <nav>
+        <ul>
+          <li><a href="#upload">Upload</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
 
-  <main>
-    <section id="upload" class="panel">
-      <h2>Upload Audio</h2>
-      <input type="file" id="audioUpload" accept="audio/*" />
-      <button id="processBtn">Analyze Meeting</button>
-      <div id="loading" class="hidden">Processing... 🔄</div>
-      <div id="results" class="hidden">
-        <h3>Summary</h3>
-        <p id="summaryText"></p>
+    <main>
+      <section id="upload" class="panel">
+        <h2>Upload Audio</h2>
+        <input type="file" id="audioUpload" accept="audio/*">
+        <button id="processBtn">Analyze Meeting</button>
+        <div id="loading" class="hidden">Processing... 🔄</div>
 
-        <h3>Confidence Heatmap <button id="toggleHeatmap">👁️</button></h3>
-        <div id="heatmap" class="hidden"></div>
+        <div id="results" class="hidden">
+          <h3>Summary</h3>
+          <p id="summaryText"></p>
 
-        <h3>Insights <button id="toggleInsights">👁️</button></h3>
-        <ul id="insightsList" class="hidden"></ul>
+          <h3>Confidence Heatmap <button id="toggleHeatmap">👁️</button></h3>
+          <div id="heatmap" class="hidden"></div>
 
-        <button id="downloadPdf">Download PDF</button>
-      </div>
-    </section>
+          <h3>Insights <button id="toggleInsights">👁️</button></h3>
+          <ul id="insightsList" class="hidden"></ul>
 
-    <section id="about" class="panel">
-      <h2>About ConvoNote</h2>
-      <p>ConvoNote is an AI-powered tool that helps you summarize meeting audio, visualize speaker confidence, and generate actionable insights in seconds.</p>
-    </section>
+          <button id="downloadPdf">Download PDF</button>
+        </div>
+      </section>
 
-    <section id="contact" class="panel">
-      <h2>Contact</h2>
-      <p>Made with ❤️ by Aryan. For feedback, reach out at <a href="mailto:your@email.com">your@email.com</a>.</p>
-    </section>
-  </main>
+      <section id="about" class="panel">
+        <h2>About</h2>
+        <p>ConvoNote helps you extract insights and summaries from meeting audio using AI and Azure.</p>
+      </section>
 
-  <footer>
-    <p>&copy; 2025 ConvoNote. All rights reserved.</p>
-  </footer>
+      <section id="contact" class="panel">
+        <h2>Contact</h2>
+        <p>Created by Aryan. Reach out at <a href="mailto:your@email.com">your@email.com</a></p>
+      </section>
+    </main>
 
+    <footer>
+      <p>&copy; 2025 ConvoNote. All rights reserved.</p>
+    </footer>
+  </div>
   <script src="js/main.js"></script>
 </body>
 </html>
