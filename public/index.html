@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="glass-wrapper">
-    <header>
+  <div class="glass-container">
+    <header class="topbar">
       <h1 class="logo">ConvoNote<span class="dot">.</span></h1>
       <nav>
         <ul>
@@ -22,19 +22,19 @@
 
     <main>
       <section id="upload" class="panel">
-        <h2>Upload Audio</h2>
+        <h2>Upload Meeting Audio</h2>
         <input type="file" id="audioUpload" accept="audio/*">
-        <button id="processBtn">Analyze Meeting</button>
-        <div id="loading" class="hidden">Processing... 🔄</div>
+        <button id="processBtn">Analyze</button>
+        <div id="loading" class="hidden">Processing... ⏳</div>
 
         <div id="results" class="hidden">
           <h3>Summary</h3>
           <p id="summaryText"></p>
 
-          <h3>Confidence Heatmap <button id="toggleHeatmap">👁️</button></h3>
+          <h3>Confidence Heatmap <button id="toggleHeatmap">🔍</button></h3>
           <div id="heatmap" class="hidden"></div>
 
-          <h3>Insights <button id="toggleInsights">👁️</button></h3>
+          <h3>Insights <button id="toggleInsights">📊</button></h3>
           <ul id="insightsList" class="hidden"></ul>
 
           <button id="downloadPdf">Download PDF</button>
@@ -43,19 +43,21 @@
 
       <section id="about" class="panel">
         <h2>About</h2>
-        <p>ConvoNote helps you extract insights and summaries from meeting audio using AI and Azure.</p>
+        <p>ConvoNote turns audio from your meetings into smart summaries, heatmaps, and AI-powered suggestions in seconds.</p>
       </section>
 
       <section id="contact" class="panel">
         <h2>Contact</h2>
-        <p>Created by Aryan. Reach out at <a href="mailto:your@email.com">your@email.com</a></p>
+        <p>Created by Aryan. For feedback, email <a href="mailto:your@email.com">your@email.com</a></p>
       </section>
     </main>
 
     <footer>
-      <p>&copy; 2025 ConvoNote. All rights reserved.</p>
+      <p>&copy; 2025 ConvoNote. Crafted with care and AI.</p>
     </footer>
   </div>
+
   <script src="js/main.js"></script>
 </body>
 </html>
+

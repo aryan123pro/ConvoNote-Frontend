@@ -2,27 +2,24 @@
 
 body {
   margin: 0;
-  padding: 0;
   font-family: 'Orbitron', sans-serif;
-  background: url('../assets/bg-pattern.svg') no-repeat center center fixed;
-  background-size: cover;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #f8f8f8;
-  scroll-behavior: smooth;
+  background: linear-gradient(120deg, #0f0f0f, #1a1a2e);
+  background-attachment: fixed;
+  color: #f0f0f0;
 }
 
-.glass-wrapper {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+.glass-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
   padding: 2rem;
-  margin: 2rem;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 255, 255, 0.1);
 }
 
-header {
+header.topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,49 +33,49 @@ header {
 }
 
 .logo .dot {
-  color: red;
+  color: #ff0055;
 }
 
 nav ul {
   list-style: none;
   display: flex;
-  gap: 1.5rem;
-  padding: 0;
+  gap: 2rem;
   margin: 0;
+  padding: 0;
 }
 
 nav ul li a {
-  text-decoration: none;
   color: #00ffff;
+  text-decoration: none;
   font-weight: bold;
-  transition: color 0.3s;
+  transition: color 0.3s ease;
 }
 
 nav ul li a:hover {
   color: #ff00ff;
 }
 
-main {
+.panel {
   margin-top: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+  transition: all 0.3s ease-in-out;
 }
 
-.panel {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2rem;
-  border-radius: 16px;
-  margin-bottom: 3rem;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+.panel:hover {
+  transform: scale(1.01);
 }
 
 input[type="file"] {
-  display: block;
   margin-top: 1rem;
-  padding: 0.5rem;
+  display: block;
+  padding: 0.6rem;
+  background: #111;
+  color: #fff;
   border: 1px solid #00ffff;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
+  border-radius: 6px;
 }
 
 button {
@@ -90,11 +87,17 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s;
 }
 
 button:hover {
   background: #00cccc;
+}
+
+#loading {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #ffff00;
 }
 
 .hidden {
@@ -104,32 +107,34 @@ button:hover {
 #heatmap, #insightsList {
   margin-top: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  background: #111;
+  border-radius: 8px;
 }
 
 footer {
+  margin-top: 2rem;
   text-align: center;
-  padding-top: 2rem;
-  font-size: 0.9rem;
-  color: #ccc;
+  font-size: 0.85rem;
+  color: #aaa;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
 }
 
 @media (max-width: 768px) {
-  header {
+  header.topbar {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 1rem;
   }
 
   nav ul {
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .glass-wrapper {
-    margin: 1rem;
+  .panel {
     padding: 1rem;
   }
+}
+
 }
