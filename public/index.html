@@ -16,14 +16,20 @@
           <li><a href="#upload">Upload</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact</a></li>
+          <li><a href="#developer">Developer</a></li>
         </ul>
       </nav>
+      <button class="toggle-mode" onclick="toggleTheme()">Toggle Theme</button>
     </header>
 
     <main>
       <section id="upload" class="panel">
         <h2>Upload Meeting Audio</h2>
-        <input type="file" id="audioUpload" accept="audio/*">
+        <label for="audioUpload" class="upload-label">
+          <img src="assets/upload-icon.svg" alt="Upload" class="upload-icon">
+          <span>Choose Audio File</span>
+        </label>
+        <input type="file" id="audioUpload" accept=".mp3,.wav,audio/mpeg,audio/wav" hidden>
         <button id="processBtn">Analyze</button>
         <div id="loading" class="hidden">Processing... ⏳</div>
 
@@ -50,13 +56,37 @@
         <h2>Contact</h2>
         <p>Created by Aryan. For feedback, email <a href="mailto:your@email.com">your@email.com</a></p>
       </section>
+
+      <section id="developer" class="panel">
+        <h2>Meet the Developer</h2>
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <img src="assets/aryan.jpg" alt="Developer" style="width: 120px; border-radius: 10px;">
+          <div>
+            <p><strong>Aryan</strong> is a passionate full-stack developer, AI enthusiast, and music lover. He's the mind behind ConvoNote and built it from the ground up using modern web and Azure tools.</p>
+            <p>Skilled in JavaScript, Python, Azure, and UI/UX, Aryan is always pushing creative boundaries to build meaningful tools for the world.</p>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer>
-      <p>&copy; 2025 ConvoNote. Crafted with care and AI.</p>
+      <p>&copy; 2025 ConvoNote. Crafted with care and AI by Aryan.</p>
     </footer>
   </div>
 
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+    });
+  </script>
   <script src="js/main.js"></script>
 </body>
 </html>
