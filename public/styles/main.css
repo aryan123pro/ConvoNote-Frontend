@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'helvetica', sans-serif;
   background: linear-gradient(120deg, #0f0f0f, #1a1a2e);
   background-attachment: fixed;
   color: #f0f0f0;
@@ -25,9 +25,12 @@ header.topbar {
   align-items: center;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
 }
 
 .logo {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bolder;
   font-size: 2rem;
   color: #00ffff;
 }
@@ -42,6 +45,7 @@ nav ul {
   gap: 2rem;
   margin: 0;
   padding: 0;
+  flex-wrap: wrap;
 }
 
 nav ul li a {
@@ -76,6 +80,7 @@ input[type="file"] {
   color: #fff;
   border: 1px solid #00ffff;
   border-radius: 6px;
+  width: 100%;
 }
 
 button {
@@ -88,6 +93,7 @@ button {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
+  width: 100%;
 }
 
 button:hover {
@@ -109,6 +115,25 @@ button:hover {
   padding: 1rem;
   background: #111;
   border-radius: 8px;
+  color: white;
+}
+
+#toggleHeatmap,
+#toggleInsights {
+  margin-left: 1rem;
+  font-size: 0.9rem;
+  background: #111;
+  color: #00ffff;
+  border: 1px solid #00ffff;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  width: auto;
+}
+
+#toggleHeatmap:hover,
+#toggleInsights:hover {
+  background: #00ffff;
+  color: #111;
 }
 
 footer {
@@ -132,9 +157,27 @@ footer {
     gap: 0.5rem;
   }
 
+  nav ul li {
+    width: 100%;
+  }
+
+  nav ul li a {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0;
+  }
+
   .panel {
     padding: 1rem;
   }
-}
 
+  input[type="file"],
+  button {
+    width: 100%;
+  }
+
+  #toggleHeatmap,
+  #toggleInsights {
+    margin-top: 0.5rem;
+  }
 }
