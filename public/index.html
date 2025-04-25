@@ -36,32 +36,18 @@
       </div>
     </section>
     
-    <section id="upload" class="section">
-      <div class="container">
-        <h2>Upload Audio</h2>
-        <label class="upload-label" for="audioUpload">
-          <img src="assets/upload-icon.svg" alt="Upload Icon" class="upload-icon">
-          <span>Choose or Drop Audio File</span>
-        </label>
-        <input type="file" id="audioUpload" accept=".mp3,.wav" hidden />
-        <button id="processBtn">Analyze</button>
-        <div id="loading" class="hidden">Analyzing...⏳</div>
-
-        <div id="results" class="hidden">
-          <h3>Summary</h3>
-          <p id="summaryText"></p>
-
-          <h3>Confidence Heatmap <button id="toggleHeatmap">👁</button></h3>
-          <div id="heatmap" class="hidden"></div>
-
-          <h3>Insights <button id="toggleInsights">💡</button></h3>
-          <ul id="insightsList" class="hidden"></ul>
-
-          <button id="downloadPdf">Download PDF</button>
-        </div>
+    <section id="upload">
+      <h2>Upload Audio</h2>
+      <input type="file" id="audioUpload" accept=".mp3,.wav" />
+      <button id="processBtn">Analyze</button>
+      <div id="loading" class="hidden">Analyzing...⏳</div>
+      <div id="results" class="hidden">
+        <p id="summaryText"></p>
+        <div id="heatmap" class="hidden"></div>
+        <ul id="insightsList" class="hidden"></ul>
+        <button id="downloadPdf">Download PDF</button>
       </div>
     </section>
-
  
 
     <section id="about" class="section">

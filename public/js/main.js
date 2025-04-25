@@ -1,5 +1,3 @@
-// main.js - Final version with debugging, DOMContentLoaded, and working upload
-
 import { generatePDF } from './pdfGenerator.js';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,15 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    console.log("✅ Analyze button clicked");
-    console.log("🎵 Uploading file:", fileInput.files[0]);
-
     const formData = new FormData();
     formData.append("file", fileInput.files[0]);
-
-    for (let pair of formData.entries()) {
-      console.log(`📦 ${pair[0]}:`, pair[1]);
-    }
 
     results.classList.add("hidden");
     loading.classList.remove("hidden");
@@ -36,10 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: formData,
       });
 
-      console.log("📡 Response from /speechtotext:", speechRes);
-
       const { transcript } = await speechRes.json();
-      console.log("📝 Transcript received:", transcript);
 
       const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryinsights", {
         method: "POST",
@@ -56,22 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
       loading.classList.add("hidden");
       results.classList.remove("hidden");
 
-      // Save for export
       window.meetingData = { summary, insights, heatmapData, actions, decisions };
-
     } catch (err) {
-      console.error("❌ Error during processing:", err);
-      alert("Something went wrong. Try again.");
+      console.error("Error:", err);
+      alert("Something went wrong.");
       loading.classList.add("hidden");
     }
-  });
-
-  document.getElementById("toggleHeatmap").addEventListener("click", () => {
-    heatmap.classList.toggle("hidden");
-  });
-
-  document.getElementById("toggleInsights").addEventListener("click", () => {
-    insightsList.classList.toggle("hidden");
   });
 
   document.getElementById("downloadPdf").addEventListener("click", () => {

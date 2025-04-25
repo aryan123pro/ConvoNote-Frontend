@@ -1,36 +1,33 @@
-// pdfGenerator.js
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-
-window.generatePDF = function (transcript, insights, confidenceMap) {
+export function generatePDF(summary, insights, heatmapData, actions, decisions) {
+  const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  doc.setFontSize(22);
-  doc.setTextColor(255, 0, 0);
-  doc.text('ConvoNote', 105, 20, null, null, 'center');
+  const now = new Date();
+  const date = now.toLocaleDateString();
+  const time = now.toLocaleTimeString();
 
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(14);
-  doc.text('Meeting Summary & Analysis', 105, 30, null, null, 'center');
-  doc.line(20, 32, 190, 32);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(255, 0, 0);
+  doc.setFontSize(18);
+  doc.text("ConvoNote", 20, 20);
 
   doc.setFontSize(12);
-  doc.text('📌 Insights:', 20, 45);
-  insights.forEach((insight, index) => {
-    doc.text(`- ${insight}`, 25, 55 + index * 7);
-  });
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Date: ${date}    Time: ${time}`, 20, 30);
+  doc.text("Summary:", 20, 40);
+  doc.text(summary || "-", 20, 50);
 
-  let yOffset = 55 + insights.length * 7 + 10;
-  doc.text('📊 Confidence Heatmap:', 20, yOffset);
-  yOffset += 5;
-  confidenceMap.forEach((c, i) => {
-    doc.text(`${c.emoji} ${c.timestamp}: ${c.text}`, 25, yOffset + i * 6);
-  });
+  doc.text("Action Items:", 20, 70);
+  (actions || ["-"]).forEach((a, i) => doc.text(`${i + 1}. ${a}`, 25, 80 + i * 10));
 
-  yOffset += confidenceMap.length * 6 + 10;
-  doc.text('📝 Full Transcript:', 20, yOffset);
-  const lines = doc.splitTextToSize(transcript, 170);
-  doc.text(lines, 25, yOffset + 10);
+  const yStart = 80 + (actions?.length || 1) * 10 + 10;
+  doc.text("Decisions:", 20, yStart);
+  (decisions || ["-"]).forEach((d, i) => doc.text(`${i + 1}. ${d}`, 25, yStart + 10 + i * 10));
 
-  doc.save('ConvoNote_Report.pdf');
-};
+  const yHeatmap = yStart + 10 + (decisions?.length || 1) * 10 + 10;
+  doc.text("Heatmap:", 20, yHeatmap);
+  doc.text((heatmapData || []).join(" | ") || "-", 25, yHeatmap + 10);
+
+  doc.save(`ConvoNote_MeetingMinutes_${date}.pdf`);
+}
+
