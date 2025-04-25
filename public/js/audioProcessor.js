@@ -14,7 +14,7 @@ export async function uploadAudioToBlob(file) {
 }
 
 export async function transcribeAudio(blobUrl) {
-  const res = await fetch(`${API_BASE}/speechToText`, {
+  const res = await fetch(`${API_BASE}/speechtotext`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ audioUrl: blobUrl })
