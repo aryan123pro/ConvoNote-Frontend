@@ -16,6 +16,20 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please upload an audio file first.");
       return;
     }
+  
+    console.log("✅ Analyze button clicked");
+    console.log("🎵 Uploading file:", fileInput.files[0]);
+  
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+  
+    for (let pair of formData.entries()) {
+      console.log(`📦 ${pair[0]}:`, pair[1]);
+    }
+  
+
+  });
+  
 
     const validTypes = ['audio/mpeg', 'audio/wav'];
     if (!validTypes.includes(fileInput.files[0].type)) {
