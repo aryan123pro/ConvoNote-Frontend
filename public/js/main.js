@@ -1,4 +1,4 @@
-// main.js - Final version with DOMContentLoaded wrapper, ES Modules, and jsPDF CDN support
+// main.js - Final version with debugging, DOMContentLoaded, and working upload
 
 import { generatePDF } from './pdfGenerator.js';
 
@@ -16,39 +16,30 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please upload an audio file first.");
       return;
     }
-  
+
     console.log("✅ Analyze button clicked");
     console.log("🎵 Uploading file:", fileInput.files[0]);
-  
+
     const formData = new FormData();
     formData.append("file", fileInput.files[0]);
-  
+
     for (let pair of formData.entries()) {
       console.log(`📦 ${pair[0]}:`, pair[1]);
-    }
-  
-
-  });
-  
-
-    const validTypes = ['audio/mpeg', 'audio/wav'];
-    if (!validTypes.includes(fileInput.files[0].type)) {
-      alert("Only MP3 or WAV audio files are allowed.");
-      return;
     }
 
     results.classList.add("hidden");
     loading.classList.remove("hidden");
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
 
     try {
       const speechRes = await fetch("https://convonote.azurewebsites.net/api/speechtotext", {
         method: "POST",
         body: formData,
       });
+
+      console.log("📡 Response from /speechtotext:", speechRes);
+
       const { transcript } = await speechRes.json();
+      console.log("📝 Transcript received:", transcript);
 
       const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryinsights", {
         method: "POST",
@@ -69,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.meetingData = { summary, insights, heatmapData, actions, decisions };
 
     } catch (err) {
-      console.error("Error:", err);
+      console.error("❌ Error during processing:", err);
       alert("Something went wrong. Try again.");
       loading.classList.add("hidden");
     }
