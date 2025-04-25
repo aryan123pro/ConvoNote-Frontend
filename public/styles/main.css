@@ -57,7 +57,7 @@ body.dark-mode .section.about {
   justify-content: space-between;
   flex-wrap: wrap;
   text-align: left;
-  padding: 0 1rem;
+  padding: 0;
 }
 
 .logo {
@@ -142,7 +142,7 @@ body.dark-mode .section.about {
   margin: 1rem auto;
   padding: 2rem;
   border: 2px dashed #ff3c3c;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 0, 0, 0.359);
   text-align: center;
   cursor: pointer;
   border-radius: 10px;
@@ -204,8 +204,9 @@ button:hover {
 }
 
 .dev-pic {
-  width: 100px;
-  border-radius: 10px;
+  width: 270px;
+  size: 100%;
+  border-radius: 10%;
 }
 
 .footer {
@@ -222,6 +223,13 @@ body.dark-mode .footer {
 
 .hidden {
   display: none;
+}
+.devo {
+  padding: 30px 20px;
+  text-align: center;
+  margin: 1rem auto;
+  background-color: rgba(255, 0, 0, 0.858);
+  color: #000;
 }
 
 @media (max-width: 768px) {
