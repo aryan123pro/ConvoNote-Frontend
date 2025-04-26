@@ -1,80 +1,75 @@
-document.getElementById("processBtn").addEventListener("click", async () => {
-  const fileInput = document.getElementById("audioUpload");
-  const loading = document.getElementById("loading");
-  const results = document.getElementById("results");
-  const summaryText = document.getElementById("summaryText");
-  const heatmap = document.getElementById("heatmap");
-  const insightsList = document.getElementById("insightsList");
+const fetch = require('node-fetch'); // Ensure node-fetch is installed
+const fs = require('fs');
+const FormData = require('form-data'); // Import FormData
 
-  // Check if a file is selected
-  if (!fileInput.files[0]) {
-    alert("Please upload an audio file first.");
+const API_KEY = 'd94580361cda43abac1fe4b07d6058f9d';
+
+module.exports = async function (context, req) {
+  context.log("Function triggered");
+
+  if (!req.body || !req.body.file) {
+    context.res = {
+      status: 400,
+      body: { error: "No file uploaded" }
+    };
     return;
-  }
-
-  // Validate file type (MP3 or WAV)
-  const validTypes = ['audio/mpeg', 'audio/wav'];
-  if (!validTypes.includes(fileInput.files[0].type)) {
-    alert("Only MP3 or WAV audio files are allowed.");
-    return;
-  }
-
-  results.classList.add("hidden");
-  loading.classList.remove("hidden");
-
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
-
-  // Log the form data to verify it's being sent properly
-  for (let pair of formData.entries()) {
-    console.log(`${pair[0]}: ${pair[1]}`);
   }
 
   try {
-    // Send the file to the backend for speech-to-text
-    const speechRes = await fetch("https://convonote.azurewebsites.net/api/speechtotext", {
-      method: "POST",
-      body: formData,
+    // Convert the uploaded file from base64
+    const audioBuffer = Buffer.from(req.body.file, 'base64');
+    const fileName = `audio-${Date.now()}.wav`;
+    fs.writeFileSync(fileName, audioBuffer);  // Save file temporarily
+
+    // Upload the audio file to AssemblyAI
+    const uploadUrl = await uploadAudioToAssemblyAI(fileName);
+
+    // Request AssemblyAI for transcribing the file
+    const transcriptionRes = await fetch('https://api.assemblyai.com/v2/transcript', {
+      method: 'POST',
+      headers: {
+        'authorization': API_KEY,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        audio_url: uploadUrl,  // Use this if you uploaded the file to their server
+      })
     });
 
-    // Handle non-200 responses (400, 500, etc.)
-    if (!speechRes.ok) {
-      throw new Error(`Error: ${speechRes.statusText}`);
+    const transcriptionResult = await transcriptionRes.json();
+
+    // Polling for transcription status (AssemblyAI processes in steps)
+    if (transcriptionResult.status === 'completed') {
+      context.res = {
+        status: 200,
+        body: { transcript: transcriptionResult.text }
+      };
+    } else {
+      context.res = {
+        status: 500,
+        body: { error: "Transcription failed" }
+      };
     }
 
-    // Parse the response as JSON
-    const response = await speechRes.json();
-
-    // Check if the 'transcript' field is present in the response
-    if (!response.transcript) {
-      throw new Error("Missing transcript in the response.");
-    }
-
-    // Send the transcript for summary and insights processing
-    const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryinsights", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcript: response.transcript }),
-    });
-
-    // Check if the response from summary insights is valid
-    if (!summaryRes.ok) {
-      throw new Error(`Error: ${summaryRes.statusText}`);
-    }
-
-    const { summary, insights, heatmapData } = await summaryRes.json();
-
-    // Display results on the frontend
-    summaryText.textContent = summary;
-    heatmap.innerHTML = heatmapData.map((c, i) => `<div>${i + 1}. ${c}</div>`).join('');
-    insightsList.innerHTML = insights.map(i => `<li>${i}</li>`).join('');
-
-    loading.classList.add("hidden");
-    results.classList.remove("hidden");
-
-  } catch (err) {
-    console.error("Error:", err);
-    alert("Something went wrong. Please try again.");
-    loading.classList.add("hidden");
+  } catch (error) {
+    context.log("❌ Error:", error);
+    context.res = {
+      status: 500,
+      body: { error: "Speech-to-text failed" }
+    };
   }
-});
+};
+
+async function uploadAudioToAssemblyAI(fileName) {
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream(fileName));
+
+  const response = await fetch('https://api.assemblyai.com/v2/upload', {
+    method: 'POST',
+    headers: { 'authorization': API_KEY },
+    body: formData,
+  });
+
+  const data = await response.json();
+  return data.upload_url;  // Return the uploaded URL
+}
