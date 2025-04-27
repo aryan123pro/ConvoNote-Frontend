@@ -256,3 +256,6 @@ body.dark-mode .footer {
     padding: 1.5rem;
   }
 }
+.hidden {
+  display: none;
+}

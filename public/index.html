@@ -36,19 +36,21 @@
       </div>
     </section>
     
-    <section id="upload">
-      <h2>Upload Audio</h2>
-      <input type="file" id="audioUpload" accept=".mp3,.wav" />
-      <button id="processBtn">Analyze</button>
-      <div id="loading" class="hidden">Analyzing...⏳</div>
+    <section id="transcription" class="section">
+      <h2>Upload Your Audio</h2>
+    
+      <input type="file" id="audioUpload" accept=".wav, .mp3" />
+      <button id="analyzeBtn">Analyze</button>
+    
+      <div id="loading" class="hidden">Analyzing... Please wait ⏳</div>
+    
       <div id="results" class="hidden">
+        <h3>Transcription:</h3>
         <p id="summaryText"></p>
-        <div id="heatmap" class="hidden"></div>
-        <ul id="insightsList" class="hidden"></ul>
-        <button id="downloadPdf">Download PDF</button>
+        <button id="copyBtn">Copy Text</button>
       </div>
     </section>
- 
+    
 
     <section id="about" class="section">
       <div class="container">

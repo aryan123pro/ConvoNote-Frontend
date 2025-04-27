@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const processBtn = document.getElementById('processBtn');
+  const analyzeBtn = document.getElementById('analyzeBtn');
   const audioUpload = document.getElementById('audioUpload');
-
   const loadingDiv = document.getElementById('loading');
   const resultsDiv = document.getElementById('results');
   const summaryText = document.getElementById('summaryText');
+  const copyBtn = document.getElementById('copyBtn');
 
-  processBtn.addEventListener('click', async () => {
+  analyzeBtn.addEventListener('click', async () => {
     const file = audioUpload.files[0];
 
     if (!file) {
@@ -25,31 +25,40 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('https://convonote.azurewebsites.net/api/speechtotext', {
         method: 'POST',
         headers: {
-          'Content-Type': 'audio/mpeg',  // 🔥 Force Content-Type to 'audio/mpeg'
+          'Content-Type': file.type || 'audio/wav',
+          'Accept': 'application/json'
         },
         body: uint8Array,
       });
 
-      if (!response.ok) {
-        throw new Error('Server returned an error');
-      }
-
       const data = await response.json();
-      console.log('Transcription result:', data);
+      console.log('Azure Speech Response:', data);
 
       loadingDiv.classList.add('hidden');
-      resultsDiv.classList.remove('hidden');
 
       if (data.DisplayText) {
         summaryText.innerText = data.DisplayText;
+        resultsDiv.classList.remove('hidden');
       } else {
-        summaryText.innerText = 'No text found.';
+        summaryText.innerText = "No text found.";
+        resultsDiv.classList.remove('hidden');
       }
 
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error during analysis:', error);
       loadingDiv.classList.add('hidden');
-      alert('Something went wrong during analysis.');
+      alert('Something went wrong. Please try again.');
     }
+  });
+
+  copyBtn.addEventListener('click', () => {
+    const text = summaryText.innerText;
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        alert('Text copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy:', err);
+      });
   });
 });
