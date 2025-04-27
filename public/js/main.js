@@ -10,18 +10,20 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-
     try {
       document.getElementById('loading').classList.remove('hidden');
       document.getElementById('results').classList.add('hidden');
 
+      // Read file as ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+
       const response = await fetch('https://convonote.azurewebsites.net/api/speechtotext', {
         method: 'POST',
         headers: {
-          'Content-Type': file.type,  // important: set audio content-type correctly
+          'Content-Type': file.type, // example: 'audio/mpeg'
         },
-        body: arrayBuffer,
+        body: uint8Array,
       });
 
       if (!response.ok) {
