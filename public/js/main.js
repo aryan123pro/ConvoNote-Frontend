@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const checkResponse = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
         method: 'GET',
         headers: {
-          'authorization': 'd94580361cda43abac1fe4b07d6058f9', // <-- VERY IMPORTANT: put your AssemblyAI Key here!
+          'authorization': 'd94580361cda43abac1fe4b07d6058f9',  // <-- AssemblyAI API Key directly here
         },
       });
 
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
     } catch (error) {
-      console.error('Frontend Error:', error);
+      console.error('Frontend Error during analysis:', error);
       loadingDiv.classList.add('hidden');
       alert('Something went wrong: ' + (error.message || 'Unknown error.'));
     }
