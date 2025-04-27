@@ -17,42 +17,57 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       loadingDiv.classList.remove('hidden');
       resultsDiv.classList.add('hidden');
-      loadingDiv.innerText = "Analyzing... Please wait ⏳";
+      loadingDiv.innerText = "Uploading and starting analysis...⏳";
 
       const arrayBuffer = await file.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
 
-      const res = await fetch('https://convonote.azurewebsites.net/api/speechtotext', {
+      const startResponse = await fetch('https://convonote.azurewebsites.net/api/speechtotext', {
         method: 'POST',
         headers: {
           'Content-Type': file.type || 'audio/wav',
-          'Accept': 'application/json',
         },
         body: uint8Array,
       });
 
-      const data = await res.json();
-      console.log('Azure Speech API Response:', data);
+      const startData = await startResponse.json();
+      console.log('Start Transcript Response:', startData);
 
-      loadingDiv.classList.add('hidden');
-
-      if (data.error) {
-        alert('Error during analysis: ' + data.message);
+      if (startData.error) {
+        alert('Error during upload: ' + startData.message);
+        loadingDiv.classList.add('hidden');
         return;
       }
 
-      if (data.DisplayText) {
-        summaryText.innerText = data.DisplayText;
+      const transcriptId = startData.transcriptId;
+      console.log('Transcript ID:', transcriptId);
+
+      loadingDiv.innerText = "Processing... Please wait ⏳ (around 15 seconds)";
+      await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds
+
+      const checkResponse = await fetch(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, {
+        method: 'GET',
+        headers: {
+          'authorization': 'd94580361cda43abac1fe4b07d6058f9', // <-- VERY IMPORTANT: put your AssemblyAI Key here!
+        },
+      });
+
+      const checkData = await checkResponse.json();
+      console.log('Final Transcript Data:', checkData);
+
+      loadingDiv.classList.add('hidden');
+
+      if (checkData.status === 'completed') {
+        summaryText.innerText = checkData.text;
         resultsDiv.classList.remove('hidden');
       } else {
-        summaryText.innerText = "No text found.";
-        resultsDiv.classList.remove('hidden');
+        alert('Transcription not completed yet. Please try again later.');
       }
 
     } catch (error) {
-      console.error('Frontend Error during analysis:', error);
+      console.error('Frontend Error:', error);
       loadingDiv.classList.add('hidden');
-      alert('Something went wrong. ' + (error.message || 'Unknown error.'));
+      alert('Something went wrong: ' + (error.message || 'Unknown error.'));
     }
   });
 
