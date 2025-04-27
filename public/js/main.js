@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const analyzeBtn = document.getElementById('analyzeBtn');
-  const fileInput = document.querySelector('input[type="file"]');
+  const fileInput = document.getElementById('fileInput');
 
   analyzeBtn.addEventListener('click', async () => {
     const file = fileInput.files[0];
