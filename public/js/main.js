@@ -49,6 +49,25 @@ document.addEventListener('DOMContentLoaded', () => {
       loadingDiv.classList.add('hidden');
       alert('Something went wrong. Please try again.');
     }
+
+    const data = await response.json();
+console.log('Azure Speech Response:', data);
+
+loadingDiv.classList.add('hidden');
+
+if (data.error) {
+  alert('Error during analysis: ' + data.message);
+  return;
+}
+
+if (data.DisplayText) {
+  summaryText.innerText = data.DisplayText;
+  resultsDiv.classList.remove('hidden');
+} else {
+  summaryText.innerText = "No text found.";
+  resultsDiv.classList.remove('hidden');
+}
+
   });
 
   copyBtn.addEventListener('click', () => {
@@ -61,4 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Failed to copy:', err);
       });
   });
+
+  
 });
