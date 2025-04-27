@@ -10,8 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
+    const arrayBuffer = await file.arrayBuffer();
 
     try {
       document.getElementById('loading').classList.remove('hidden');
@@ -19,7 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const response = await fetch('https://convonote.azurewebsites.net/api/speechtotext', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': file.type,  // important: set audio content-type correctly
+        },
+        body: arrayBuffer,
       });
 
       if (!response.ok) {
