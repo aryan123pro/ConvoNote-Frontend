@@ -28,8 +28,8 @@ document.getElementById("processBtn").addEventListener("click", async () => {
   formData.append("file", file);
 
   try {
-    // Send the file to the backend for speech-to-text
-    const response = await fetch("https://convonote.azurewebsites.net/api/speechtotext", {
+    // Send the file to the backend for speech-to-text (using AssemblyAI)
+    const response = await fetch("https://convonote.azurewebsites.net/api/speechtotext", {  // Update this with your backend URL
       method: "POST",
       body: formData,
     });
@@ -42,7 +42,7 @@ document.getElementById("processBtn").addEventListener("click", async () => {
 
     if (data.transcript) {
       // Send the transcript for summary and insights processing
-      const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryinsights", {
+      const summaryRes = await fetch("https://convonote.azurewebsites.net/api/summaryinsights", {  // Update this with your backend URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transcript: data.transcript }),
