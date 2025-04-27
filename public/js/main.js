@@ -1,58 +1,69 @@
-module.exports = async function (context, req) {
-  if (req.method !== 'POST') {
-    context.res = {
-      status: 405,
-      body: { error: true, message: 'Method Not Allowed' },
-    };
-    return;
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const audioUpload = document.getElementById('audioUpload');
+  const loadingDiv = document.getElementById('loading');
+  const resultsDiv = document.getElementById('results');
+  const summaryText = document.getElementById('summaryText');
+  const copyBtn = document.getElementById('copyBtn');
 
-  try {
-    const AZURE_SPEECH_KEY = process.env.AZURE_SPEECH_KEY;
-    const AZURE_SPEECH_REGION = process.env.AZURE_SPEECH_REGION;
+  analyzeBtn.addEventListener('click', async () => {
+    const file = audioUpload.files[0];
 
-    if (!AZURE_SPEECH_KEY || !AZURE_SPEECH_REGION) {
-      throw new Error('Azure Speech credentials missing.');
+    if (!file) {
+      alert('Please upload an audio file first.');
+      return;
     }
-
-    const endpoint = `https://${AZURE_SPEECH_REGION}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-US`;
-
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Ocp-Apim-Subscription-Key': AZURE_SPEECH_KEY,
-        'Content-Type': req.headers['content-type'] || 'audio/wav',
-        'Accept': 'application/json',
-      },
-      body: req.body,
-    });
-
-    const resultText = await response.text(); // 🔥 Important - read as text
 
     try {
-      const parsed = JSON.parse(resultText);
+      loadingDiv.classList.remove('hidden');
+      resultsDiv.classList.add('hidden');
+      loadingDiv.innerText = "Analyzing... Please wait ⏳";
 
-      if (parsed.RecognitionStatus && parsed.RecognitionStatus === "Success") {
-        context.res = {
-          status: 200,
-          body: parsed, // ✅ Successfully recognized
-        };
-      } else {
-        throw new Error(parsed.RecognitionStatus || "Azure Speech API error.");
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      const res = await fetch('https://convonote.azurewebsites.net/api/speechtotext', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type || 'audio/wav',
+          'Accept': 'application/json',
+        },
+        body: uint8Array,
+      });
+
+      const data = await res.json();
+      console.log('Azure Speech API Response:', data);
+
+      loadingDiv.classList.add('hidden');
+
+      if (data.error) {
+        alert('Error during analysis: ' + data.message);
+        return;
       }
 
-    } catch (jsonError) {
-      throw new Error("Failed parsing Azure Speech response: " + resultText);
-    }
+      if (data.DisplayText) {
+        summaryText.innerText = data.DisplayText;
+        resultsDiv.classList.remove('hidden');
+      } else {
+        summaryText.innerText = "No text found.";
+        resultsDiv.classList.remove('hidden');
+      }
 
-  } catch (error) {
-    console.error('REAL BACKEND ERROR:', error);
-    context.res = {
-      status: 200, // Always send safe 200 to frontend
-      body: {
-        error: true,
-        message: error.message || 'Unknown server error',
-      },
-    };
-  }
-};
+    } catch (error) {
+      console.error('Frontend Error during analysis:', error);
+      loadingDiv.classList.add('hidden');
+      alert('Something went wrong. ' + (error.message || 'Unknown error.'));
+    }
+  });
+
+  copyBtn.addEventListener('click', () => {
+    const text = summaryText.innerText;
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        alert('Text copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy:', err);
+      });
+  });
+});
