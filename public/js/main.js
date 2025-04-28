@@ -1,4 +1,4 @@
-\document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('startRecording');
   const stopBtn = document.getElementById('stopRecording');
   const analyzeBtn = document.getElementById('analyzeBtn');
