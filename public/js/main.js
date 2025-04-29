@@ -1,74 +1,81 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.getElementById('startRecording');
-  const stopBtn = document.getElementById('stopRecording');
-  const analyzeBtn = document.getElementById('analyzeBtn');
-  const downloadPdfBtn = document.getElementById('downloadPdf');
-  const liveText = document.getElementById('liveText');
-  const summaryText = document.getElementById('summaryText');
+const uploadInput = document.getElementById("audioUpload");
+const processBtn = document.getElementById("processBtn");
+const loading = document.getElementById("loading");
+const summaryText = document.getElementById("summaryText");
+const results = document.getElementById("results");
+const downloadBtn = document.getElementById("downloadPdf");
 
-  let recognition;
-  let fullTranscript = '';
+processBtn.addEventListener("click", async () => {
+  const file = uploadInput.files[0];
 
-  if (!('webkitSpeechRecognition' in window)) {
-    alert('Web Speech API is not supported in your browser.');
-  } else {
-    recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onresult = (event) => {
-      let interimTranscript = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          fullTranscript += transcript + ' ';
-        } else {
-          interimTranscript += transcript;
-        }
-      }
-      liveText.innerText = fullTranscript + interimTranscript;
-    };
+  if (!file) {
+    alert("Please upload an audio file first.");
+    return;
   }
 
-  startBtn.addEventListener('click', () => {
-    fullTranscript = '';
-    liveText.innerText = '';
-    recognition.start();
-  });
+  summaryText.innerText = "";
+  results.classList.add("hidden");
+  loading.classList.remove("hidden");
 
-  stopBtn.addEventListener('click', () => {
-    recognition.stop();
-  });
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
 
-  analyzeBtn.addEventListener('click', async () => {
-    try {
-      if (!fullTranscript.trim()) {
-        alert('No transcription available yet.');
-        return;
-      }
+    // Call speech-to-text endpoint
+    const transcriptRes = await fetch("/api/speechtotext", {
+      method: "POST",
+      body: formData,
+    });
 
-      const response = await fetch('https://convonote.azurewebsites.net/api/summarize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: fullTranscript }),
-      });
+    const transcriptData = await transcriptRes.json();
+    const rawTranscript = transcriptData.transcript;
 
-      const data = await response.json();
-      if (data.summary) {
-        summaryText.innerText = data.summary;
-      } else {
-        alert('Summarization failed.');
-      }
-    } catch (error) {
-      console.error('Summarization Error:', error);
-      alert('Something went wrong during summarization.');
-    }
-  });
+    // Call summarize endpoint
+    const summaryRes = await fetch("/api/summarize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: rawTranscript }),
+    });
 
-  downloadPdfBtn.addEventListener('click', () => {
-    generatePdf(summaryText.innerText, fullTranscript);
-  });
+    const result = await summaryRes.json();
+
+    if (!summaryRes.ok) throw new Error(result.error || "Summarization failed");
+
+    // Display formatted summary in browser (handle \n\n as visual line breaks)
+    summaryText.innerHTML = result.summary.replace(/\n\n/g, "<br><br>");
+
+    loading.classList.add("hidden");
+    results.classList.remove("hidden");
+
+  } catch (error) {
+    loading.classList.add("hidden");
+    alert("Something went wrong during analysis: " + error.message);
+    console.error("Frontend Error:", error);
+  }
+});
+
+// Download summary as PDF
+downloadBtn.addEventListener("click", () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const currentDate = new Date().toLocaleString();
+
+  const formattedText = summaryText.innerText;
+
+  doc.setFontSize(14);
+  doc.setTextColor(200, 0, 0);
+  doc.text("ConvoNote", 15, 15);
+
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Date: ${currentDate}`, 15, 25);
+  doc.text("Summary:", 15, 35);
+
+  doc.setFontSize(11);
+  const lines = doc.splitTextToSize(formattedText, 180);
+  doc.text(lines, 15, 45);
+
+  doc.save("meeting-summary.pdf");
 });
