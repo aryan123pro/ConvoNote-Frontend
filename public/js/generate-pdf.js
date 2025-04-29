@@ -1,31 +1,46 @@
 function generatePdf(summary, transcript) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
+  const currentDate = new Date().toLocaleString();
 
-  // ConvoNote Header
-  doc.setTextColor(255, 0, 0); // Red color
-  doc.setFont("helvetica", "bold"); // Bold font to simulate Orbitron feel
-  doc.setFontSize(18);
+  // Header: ConvoNote and Date/Time
+  doc.setTextColor(255, 0, 0); // red
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(36);
   doc.text('ConvoNote', 10, 15);
 
-  // Reset for the rest of the PDF
-  doc.setFontSize(20);
-  doc.setTextColor(0, 0, 0); // Back to black
+  doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.text(`Date: ${currentDate}`, 150, 15); // right-aligned date
+
+  // Title: Meeting Summary
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
   doc.text('Meeting Summary', 105, 30, null, null, 'center');
 
-  // Summary Section
+  // Section: Summary
   doc.setFontSize(14);
   doc.text('Summary:', 10, 45);
-  doc.setFontSize(12);
-  doc.text(summary, 10, 55, { maxWidth: 190 });
 
-  // Transcript Section
-  let transcriptStart = 70 + summary.split(' ').length / 2; // Adjust based on summary length
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  const summaryLines = doc.splitTextToSize(summary, 180);
+  doc.text(summaryLines, 10, 55);
+
+  // Dynamic Y for Transcript
+  const summaryHeight = 55 + summaryLines.length * 6;
+
+  // Section: Full Transcript
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.text('Full Transcript:', 10, transcriptStart);
-  doc.setFontSize(12);
-  doc.text(transcript, 10, transcriptStart + 10, { maxWidth: 190 });
+  doc.text('Full Transcript:', 10, summaryHeight + 10);
 
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  const transcriptLines = doc.splitTextToSize(transcript, 180);
+  doc.text(transcriptLines, 10, summaryHeight + 20);
+
+  // Save PDF
   doc.save('ConvoNote-Meeting-Summary.pdf');
 }

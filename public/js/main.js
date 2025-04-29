@@ -100,3 +100,4 @@ window.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('theme');
   if (saved === 'dark') document.body.classList.add('dark-mode');
 });
+generatePdf(summaryText.innerText, "This is your full transcript text here...");
