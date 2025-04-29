@@ -39,51 +39,34 @@ stopBtn.addEventListener("click", () => {
   recordingStatus.classList.add("hidden");
 });
 
-// Analyze Recording
+// FAKE ANALYZE BUTTON – no backend call
 analyzeBtn.addEventListener("click", async () => {
-  const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-
   loading.classList.remove("hidden");
   summarySection.classList.add("hidden");
 
   try {
-    const formData = new FormData();
-    formData.append("file", audioBlob);
+    // Simulate 5 seconds of "AI Processing"
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    // Call speech-to-text backend
-    const transcriptRes = await fetch("/api/speechtotext", {
-      method: "POST",
-      body: formData,
-    });
+    const fakeSummary = `
+      - The team discussed upcoming deadlines and responsibilities.  
+      - Development blockers were identified and resolved.  
+      - The client’s feedback was reviewed and integrated.  
+      - Action items were assigned to all stakeholders.  
+    `;
 
-    const transcriptData = await transcriptRes.json();
-    const rawTranscript = transcriptData.transcript;
-
-    // Call summarize backend
-    const summaryRes = await fetch("/api/summarize", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: rawTranscript }),
-    });
-
-    const result = await summaryRes.json();
-
-    if (!summaryRes.ok) throw new Error(result.error || "Summarization failed");
-
-    // Display formatted summary
-    summaryText.innerHTML = result.summary.replace(/\n\n/g, "<br><br>");
+    summaryText.innerHTML = fakeSummary.replace(/\n/g, "<br><br>");
 
     loading.classList.add("hidden");
     summarySection.classList.remove("hidden");
 
   } catch (error) {
     loading.classList.add("hidden");
-    alert("Something went wrong during analysis: " + error.message);
-    console.error("Frontend Error:", error);
+    alert("Something went wrong: " + error.message);
   }
 });
 
-// Download PDF
+// PDF Download
 downloadBtn.addEventListener("click", () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
