@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ConvoNote</title>
+  <title>ConvoNote - AI Meeting Summarizer</title>
   <link rel="stylesheet" href="styles/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
+
   <header>
     <div class="container logo-theme-wrapper">
       <h1 class="logo">ConvoNote</h1>
@@ -32,32 +33,38 @@
     <section id="home" class="section">
       <div class="container">
         <h2>AI-Powered Meeting Minutes</h2>
-        <p>Upload audio and receive summarized meeting minutes with confidence heatmaps and insights.</p>
+        <p>Record and summarize your meetings effortlessly with ConvoNote.</p>
       </div>
     </section>
     
     <section id="upload" class="section">
       <h2>Live Meeting Recorder</h2>
-    
-      <div>
-        <button id="startRecording">Start Recording</button>
-        <button id="stopRecording">Stop Recording</button>
-        <button id="analyzeBtn">Summarize</button>
-        <button id="downloadPdf">Download PDF</button>
+
+      <div class="controls">
+        <button id="startBtn">🎤 Start Recording</button>
+        <button id="stopBtn" disabled>🛑 Stop Recording</button>
+        <button id="analyzeBtn" disabled>🧠 Analyze</button>
       </div>
-    
-      <h3>Live Transcription:</h3>
-      <p id="liveText">Speak now...</p>
-    
-      <h3>Summary:</h3>
-      <p id="summaryText"></p>
+
+      <!-- Recording Status Text -->
+      <section class="recording-status hidden" id="recordingStatus">
+        🔴 Recording...
+      </section>
+
+      <div id="loading" class="hidden">Analyzing your meeting...⏳</div>
+
+      <section id="summarySection" class="summary hidden">
+        <h3>Meeting Summary:</h3>
+        <p id="summaryText"></p>
+        <button id="downloadPdf">📄 Download PDF</button>
+      </section>
+
     </section>
-    
 
     <section id="about" class="section">
       <div class="container">
         <h2>About</h2>
-        <p>ConvoNote is your intelligent assistant for turning audio conversations into clear, actionable summaries.</p>
+        <p>ConvoNote is your intelligent assistant for turning audio conversations into clear, actionable summaries using AI.</p>
       </div>
     </section>
 
@@ -77,12 +84,15 @@
         <p>Email Aryan at <a href="mailto:your@email.com">your@email.com</a></p>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
     <p>© 2025 ConvoNote. Built with ❤️ and AI by Aryan.</p>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="module" src="js/main.js"></script>
   <script>
     function setTheme(mode) {
       document.body.classList.toggle('dark-mode', mode === 'dark');
@@ -93,8 +103,6 @@
       if (saved === 'dark') document.body.classList.add('dark-mode');
     });
   </script>
-  <script type="module" src="js/main.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="js/generate-pdf.js"></script>
+
 </body>
 </html>

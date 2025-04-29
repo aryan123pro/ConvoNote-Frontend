@@ -1,27 +1,56 @@
-const uploadInput = document.getElementById("audioUpload");
-const processBtn = document.getElementById("processBtn");
+let mediaRecorder;
+let audioChunks = [];
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const analyzeBtn = document.getElementById("analyzeBtn");
 const loading = document.getElementById("loading");
 const summaryText = document.getElementById("summaryText");
-const results = document.getElementById("results");
+const summarySection = document.getElementById("summarySection");
+const recordingStatus = document.getElementById("recordingStatus");
 const downloadBtn = document.getElementById("downloadPdf");
 
-processBtn.addEventListener("click", async () => {
-  const file = uploadInput.files[0];
+// Start Recording
+startBtn.addEventListener("click", async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  mediaRecorder.start();
+  audioChunks = [];
 
-  if (!file) {
-    alert("Please upload an audio file first.");
-    return;
-  }
+  mediaRecorder.addEventListener("dataavailable", (event) => {
+    audioChunks.push(event.data);
+  });
 
-  summaryText.innerText = "";
-  results.classList.add("hidden");
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+  analyzeBtn.disabled = true;
+
+  recordingStatus.classList.remove("hidden");
+});
+
+// Stop Recording
+stopBtn.addEventListener("click", () => {
+  mediaRecorder.stop();
+
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+  analyzeBtn.disabled = false;
+
+  recordingStatus.classList.add("hidden");
+});
+
+// Analyze Recording
+analyzeBtn.addEventListener("click", async () => {
+  const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
   loading.classList.remove("hidden");
+  summarySection.classList.add("hidden");
 
   try {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", audioBlob);
 
-    // Call speech-to-text endpoint
+    // Call speech-to-text backend
     const transcriptRes = await fetch("/api/speechtotext", {
       method: "POST",
       body: formData,
@@ -30,12 +59,10 @@ processBtn.addEventListener("click", async () => {
     const transcriptData = await transcriptRes.json();
     const rawTranscript = transcriptData.transcript;
 
-    // Call summarize endpoint
+    // Call summarize backend
     const summaryRes = await fetch("/api/summarize", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: rawTranscript }),
     });
 
@@ -43,11 +70,11 @@ processBtn.addEventListener("click", async () => {
 
     if (!summaryRes.ok) throw new Error(result.error || "Summarization failed");
 
-    // Display formatted summary in browser (handle \n\n as visual line breaks)
+    // Display formatted summary
     summaryText.innerHTML = result.summary.replace(/\n\n/g, "<br><br>");
 
     loading.classList.add("hidden");
-    results.classList.remove("hidden");
+    summarySection.classList.remove("hidden");
 
   } catch (error) {
     loading.classList.add("hidden");
@@ -56,7 +83,7 @@ processBtn.addEventListener("click", async () => {
   }
 });
 
-// Download summary as PDF
+// Download PDF
 downloadBtn.addEventListener("click", () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -65,7 +92,7 @@ downloadBtn.addEventListener("click", () => {
   const formattedText = summaryText.innerText;
 
   doc.setFontSize(14);
-  doc.setTextColor(200, 0, 0);
+  doc.setTextColor(255, 0, 0);
   doc.text("ConvoNote", 15, 15);
 
   doc.setFontSize(12);
@@ -78,4 +105,15 @@ downloadBtn.addEventListener("click", () => {
   doc.text(lines, 15, 45);
 
   doc.save("meeting-summary.pdf");
+});
+
+// Theme Toggle
+function setTheme(mode) {
+  document.body.classList.toggle('dark-mode', mode === 'dark');
+  localStorage.setItem('theme', mode);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') document.body.classList.add('dark-mode');
 });
