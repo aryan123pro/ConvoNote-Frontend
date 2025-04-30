@@ -6,19 +6,19 @@ module.exports = async function (context, req) {
     const text = req.body.text;
 
     if (!OPENAI_API_KEY) {
-      throw new Error('Missing OpenAI API Key.');
+      throw new Error("Missing OpenAI API Key.");
     }
 
     if (!text || text.trim().length < 5) {
-      throw new Error('Transcript is too short.');
+      throw new Error("Transcript is too short.");
     }
 
-    const url = 'https://api.openai.com/v1/chat/completions';
+    const url = "https://api.openai.com/v1/chat/completions";
 
     const messages = [
       {
         role: "system",
-        content: "You are an assistant that first corrects punctuation and grammar in a transcript, then summarizes it into 3–5 clean sentences."
+        content: "You are an assistant that corrects punctuation and grammar in a transcript, and then summarizes it into 3–5 clear sentences."
       },
       {
         role: "user",
@@ -27,41 +27,32 @@ module.exports = async function (context, req) {
     ];
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
         messages,
-        temperature: 0.3
+        temperature: 0.6,
+        max_tokens: 300
       })
     });
 
-    const responseBody = await response.json();
-
-    if (!response.ok) {
-      console.error("OpenAI API Error:", JSON.stringify(responseBody, null, 2));
-      throw new Error(responseBody.error?.message || "OpenAI API call failed");
-    }
-
-    let outputText = responseBody.choices[0].message.content.trim();
-
-    // Add line breaks after each full stop
-    const formattedText = outputText.replace(/\. /g, ".\n\n");
+    const data = await response.json();
+    const summary = data.choices[0].message.content;
 
     context.res = {
-      status: 200,
       body: {
-        summary: formattedText
+        summary: summary.trim()
       }
     };
-  } catch (error) {
-    console.error("Summarization Error:", JSON.stringify(error, null, 2));
+  } catch (err) {
+    console.error("Summarize Error:", err);
     context.res = {
       status: 500,
-      body: { error: error.message || "Summarization failed" }
+      body: { error: err.message || "Internal Server Error" }
     };
   }
 };
