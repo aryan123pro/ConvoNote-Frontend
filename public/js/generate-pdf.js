@@ -5,7 +5,7 @@ function generatePdf(summary, transcript) {
 
   // Header: ConvoNote and Date/Time
   doc.setTextColor(255, 0, 0); // red
-  doc.setFont("helvetica", "bold");
+  doc.setFont("sans-serif", "bold");
   doc.setFontSize(36);
   doc.text('ConvoNote', 10, 15);
 

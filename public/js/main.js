@@ -48,13 +48,10 @@ analyzeBtn.addEventListener("click", async () => {
 
     // Fake content
     const fakeSummary = `
-- The team discussed upcoming deadlines and responsibilities.
-- Development blockers were identified and resolved.
-- The client’s feedback was reviewed and integrated.
-- Action items were assigned to all stakeholders.
+The speaker provided an update on client onboarding sessions, confirming that the schedule has been finalized and shared with the team. Three sessions are confirmed, beginning Monday at 10 a.m. They asked team members to communicate any needed changes by the end of the day.
     `.trim();
 
-    finalTranscript = "Hello, my name is Aryan and I am here to test my new app named ConvoNote."; // Fake transcript
+    finalTranscript = "Hi everyone, just a quick update from my side.\n\nI finalized the schedule for next week’s client onboarding sessions and sent it out to the team this morning.\n\nWe’ve got three sessions confirmed so far, with the first one starting Monday at 10 a.m.\n\nIf anyone needs to make adjustments, please let me know by end of day."; // Fake transcript
 
     summaryText.innerHTML = fakeSummary.replace(/\n/g, "<br><br>");
 

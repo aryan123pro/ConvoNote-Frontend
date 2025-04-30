@@ -1,11 +1,12 @@
 html {
   scroll-behavior: smooth;
+  font-family: 'Orbitron' sans-serif;
 }
 
 body {
   margin: 0;
   padding-top: 2rem;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Orbitron' sans-serif;
   background: #fff;
   color: #222;
   transition: background-color 0.5s, color 0.5s;
@@ -19,6 +20,7 @@ body.dark-mode {
 .section {
   padding: 30px 20px;
   text-align: center;
+  font-family: 'orbitron', sans-serif;
   margin: 1rem auto;
   opacity: 0;
   transform: translateY(20px);
@@ -61,7 +63,7 @@ body.dark-mode .section.about {
 }
 
 .logo {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: bold;
   color: #ff3c3c;
   margin: 0;
@@ -79,6 +81,7 @@ body.dark-mode .section.about {
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
+
 }
 
 .nav-links {
@@ -97,6 +100,7 @@ body.dark-mode .section.about {
   font-weight: bold;
   position: relative;
   transition: color 0.3s;
+  font-family: 'Orbitron', sans-serif;
 }
 
 .nav-links li a:hover {
@@ -201,10 +205,11 @@ button:hover {
   gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+  font-size: large;
 }
 
 .dev-pic {
-  width: 270px;
+  width: 200px;
   size: 100%;
   border-radius: 10%;
 }
@@ -230,6 +235,7 @@ body.dark-mode .footer {
   margin: 1rem auto;
   background-color: rgba(255, 0, 0, 0.858);
   color: #000;
+  font-family: 'Orbitron', sans-serif;
 }
 
 @media (max-width: 768px) {
@@ -311,8 +317,9 @@ button:disabled {
 
 .faq-section h2 {
   text-align: center;
-  color: #e63946;
-  font-size: 32px;
+  color: red;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
   margin-bottom: 40px;
 }
 
