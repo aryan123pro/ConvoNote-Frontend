@@ -1,6 +1,3 @@
-let mediaRecorder;
-let audioChunks = [];
-
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const analyzeBtn = document.getElementById("analyzeBtn");
@@ -10,113 +7,118 @@ const summarySection = document.getElementById("summarySection");
 const recordingStatus = document.getElementById("recordingStatus");
 const downloadBtn = document.getElementById("downloadPdf");
 
-let finalTranscript = ""; // Store for PDF
+let finalTranscript = "";
+let recognition;
 
-// Start Recording
-startBtn.addEventListener("click", async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  mediaRecorder = new MediaRecorder(stream);
-  mediaRecorder.start();
-  audioChunks = [];
+// Setup Web Speech API
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = "en-US";
 
-  mediaRecorder.addEventListener("dataavailable", (event) => {
-    audioChunks.push(event.data);
-  });
+  recognition.onresult = (event) => {
+    let transcript = "";
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      transcript += event.results[i][0].transcript;
+    }
+    finalTranscript = transcript;
+    recordingStatus.innerText = `📝 Captured: ${transcript}`;
+  };
+} else {
+  alert("Sorry, your browser does not support speech recognition.");
+}
 
+// Start listening
+startBtn.addEventListener("click", () => {
+  recognition.start();
+  finalTranscript = "";
+  recordingStatus.innerText = "🔴 Listening...";
   startBtn.disabled = true;
   stopBtn.disabled = false;
   analyzeBtn.disabled = true;
-  recordingStatus.classList.remove("hidden");
 });
 
-// Stop Recording
+// Stop listening
 stopBtn.addEventListener("click", () => {
-  mediaRecorder.stop();
-  startBtn.disabled = false;
+  recognition.stop();
+  recordingStatus.innerText = "";
   stopBtn.disabled = true;
   analyzeBtn.disabled = false;
-  recordingStatus.classList.add("hidden");
 });
 
-// Analyze (Fake version for demo)
+// Analyze and summarize
 analyzeBtn.addEventListener("click", async () => {
+  if (!finalTranscript || finalTranscript.trim().length < 5) {
+    alert("Transcript is empty or too short.");
+    return;
+  }
+
   loading.classList.remove("hidden");
   summarySection.classList.add("hidden");
+  downloadBtn.classList.add("hidden");
 
   try {
-    await new Promise((resolve) => setTimeout(resolve, 5000)); // Simulate AI processing
+    const response = await fetch("https://convonote.azurewebsites.net/api/summarize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text: finalTranscript })
+    });
 
-    // Fake content
-    const fakeSummary = `
-The speaker provided an update on client onboarding sessions, confirming that the schedule has been finalized and shared with the team. Three sessions are confirmed, beginning Monday at 10 a.m. They asked team members to communicate any needed changes by the end of the day.
-    `.trim();
+    const data = await response.json();
 
-    finalTranscript = "Hi everyone, just a quick update from my side.\n\nI finalized the schedule for next week’s client onboarding sessions and sent it out to the team this morning.\n\nWe’ve got three sessions confirmed so far, with the first one starting Monday at 10 a.m.\n\nIf anyone needs to make adjustments, please let me know by end of day."; // Fake transcript
-
-    summaryText.innerHTML = fakeSummary.replace(/\n/g, "<br><br>");
-
-    loading.classList.add("hidden");
+    summaryText.innerText = `📝 Summary:\n\n${data.summary}`;
     summarySection.classList.remove("hidden");
-
-  } catch (error) {
+    downloadBtn.classList.remove("hidden");
+  } catch (err) {
+    console.error(err);
+    alert("Error contacting summarizer API.");
+  } finally {
     loading.classList.add("hidden");
-    alert("Something went wrong: " + error.message);
+    analyzeBtn.disabled = true;
+    startBtn.disabled = false;
   }
 });
 
-// Download PDF
+// PDF download
 downloadBtn.addEventListener("click", () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  const currentDate = new Date().toLocaleString();
 
-  // Header: ConvoNote + Date
+  doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 0, 0);
-  doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
-  doc.text("ConvoNote", 10, 15);
+  doc.text("ConvoNote", 15, 20);
 
+  doc.setFont("helvetica", "normal");
   doc.setTextColor(0, 0, 0);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.text(`Date: ${currentDate}`, 150, 15);
-
-  // Title
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("Meeting Summary", 105, 30, null, null, "center");
-
-  // Summary
-  doc.setFontSize(14);
-  doc.text("Summary:", 105, 45, null, null, "center");
-
-  doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
-  const summaryLines = doc.splitTextToSize(summaryText.innerText, 180);
-  doc.text(summaryLines, 10, 55);
 
-  const summaryHeight = 55 + summaryLines.length * 6;
+  const date = new Date().toLocaleString();
+  const summary = summaryText.innerText;
+  const transcript = finalTranscript.replace(/\. /g, ".\n");
 
-  // Transcript
+  let y = 35;
+  doc.text(`📄 Filename: realtime_recording`, 15, y);
+  y += 8;
+  doc.text(`📅 Date & Time: ${date}`, 15, y);
+  y += 10;
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Full Transcript:", 105, summaryHeight + 10, null, null, "center");
-
+  doc.text("📝 Summary:", 15, y);
+  y += 8;
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  const transcriptLines = doc.splitTextToSize(finalTranscript, 180);
-  doc.text(transcriptLines, 10, summaryHeight + 20);
+  doc.text(doc.splitTextToSize(summary, 180), 15, y);
+  y += doc.getTextDimensions(summary).h + 10;
 
-  doc.save("ConvoNote-Meeting-Summary.pdf");
-});
+  doc.setFont("helvetica", "bold");
+  doc.text("🗣️ Transcript:", 15, y);
+  y += 8;
+  doc.setFont("helvetica", "normal");
+  doc.text(doc.splitTextToSize(transcript, 180), 15, y);
 
-// Theme toggle
-function setTheme(mode) {
-  document.body.classList.toggle("dark-mode", mode === "dark");
-  localStorage.setItem("theme", mode);
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("theme");
-  if (saved === "dark") document.body.classList.add("dark-mode");
+  doc.save("ConvoNote_Summary.pdf");
 });
